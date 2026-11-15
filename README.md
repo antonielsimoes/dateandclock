@@ -1,3 +1,5 @@
+https://antonielsimoes.github.io/dateandclock/
+
 # Agora — relógio material
 
 Site estático que mostra **hora, data e dia da semana** em tempo real, com visual inspirado no Material Design 3 e na paleta de referência anexada.
