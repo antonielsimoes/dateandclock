@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Agora: um relógio Material Design com hora, data e dia da semana em tempo real.">
+  <meta name="theme-color" id="themeColor" content="#4a2bc7">
+  <title>Agora — hora, data e dia da semana</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var requested = params.get("theme");
+        var stored = localStorage.getItem("agora-theme");
+        var theme = requested === "dark" || requested === "light"
+          ? requested
+          : (stored === "dark" ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {}
+    }());
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+    <defs>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.25"/>
+        <path d="M12 7.5V12l3 2"/>
+      </symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24">
+        <path d="M19 10.3c0 5-7 10.2-7 10.2S5 15.3 5 10.3a7 7 0 1 1 14 0Z"/>
+        <circle cx="12" cy="10.3" r="2.4"/>
+      </symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4.1"/>
+        <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"/>
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24">
+        <path d="M20.2 14.4A8.5 8.5 0 0 1 9.6 3.8 8.5 8.5 0 1 0 20.2 14.4Z"/>
+      </symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24">
+        <rect x="9" y="9" width="10.5" height="11" rx="2.5"/>
+        <path d="M15.5 5.5V5a2 2 0 0 0-2-2H6.2a2.5 2.5 0 0 0-2.5 2.5v7.2a2.5 2.5 0 0 0 2.5 2.5H7"/>
+      </symbol>
+      <symbol id="i-arrow-down" viewBox="0 0 24 24">
+        <path d="M12 4.5v14M6.5 13 12 18.5 17.5 13"/>
+      </symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24">
+        <rect x="3.5" y="5.2" width="17" height="15.3" rx="3"/>
+        <path d="M8 3.2v4M16 3.2v4M3.5 10h17"/>
+      </symbol>
+      <symbol id="i-tune" viewBox="0 0 24 24">
+        <path d="M4 7h9M17 7h3M4 17h3M11 17h9M4 12h3M11 12h9"/>
+        <circle cx="15" cy="7" r="2"/>
+        <circle cx="9" cy="12" r="2"/>
+        <circle cx="7" cy="17" r="2"/>
+      </symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M3.5 12h17M12 3.5c2.3 2.4 3.5 5.3 3.5 8.5S14.3 18.1 12 20.5C9.7 18.1 8.5 15.2 8.5 12S9.7 5.9 12 3.5Z"/>
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12.5 4.2 4L19 6.8"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="backdrop" aria-hidden="true">
+    <span class="backdrop__hatch"></span>
+    <span class="backdrop__orb backdrop__orb--one"></span>
+    <span class="backdrop__orb backdrop__orb--two"></span>
+    <span class="backdrop__tile"></span>
+  </div>
+
+  <div class="shell" id="top">
+    <header class="topbar">
+      <div class="brand" aria-label="Agora, relógio material">
+        <span class="brand__mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-clock"/></svg>
+        </span>
+        <span class="brand__name">agora<span class="brand__dot">.</span></span>
+        <span class="brand__tag">relógio material</span>
+      </div>
+
+      <div class="topbar__actions">
+        <span class="location-pill">
+          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-pin"/></svg>
+          <span class="location-pill__text">São Paulo, BR</span>
+        </span>
+        <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false">
+          <svg class="icon theme-toggle__moon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-moon"/></svg>
+          <svg class="icon theme-toggle__sun" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-sun"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <noscript>
+      <p class="noscript">Ative o JavaScript para ver a hora, a data e o dia da semana em tempo real.</p>
+    </noscript>
+
+    <main>
+      <section class="hero" aria-labelledby="pageTitle">
+        <h1 class="sr-only" id="pageTitle">Hora, data e dia da semana em São Paulo</h1>
+
+        <article class="hero-card">
+          <div class="hero-card__deco" aria-hidden="true">
+            <span class="hero-card__ring"></span>
+            <span class="hero-card__ring hero-card__ring--small"></span>
+            <span class="hero-card__hatch"></span>
+            <span class="hero-card__dot"></span>
+          </div>
+
+          <div class="hero-card__content">
+            <div class="hero-card__status">
+              <span class="live-pill"><span class="live-pill__dot"></span>Em tempo real</span>
+              <span class="greeting">
+                <svg class="icon greeting__icon" aria-hidden="true" viewBox="0 0 24 24"><use id="greetingIcon" href="#i-sun"/></svg>
+                <span id="greetingText">Boa tarde</span>
+              </span>
+            </div>
+
+            <div class="digital">
+              <time class="digital__time" id="clockTime" aria-label="Hora atual">
+                <span class="digital__main">
+                  <span id="hourPart">--</span><span class="digital__colon" aria-hidden="true">:</span><span id="minutePart">--</span>
+                </span>
+                <span class="digital__side" id="digitalSide">
+                  <span class="digital__seconds" id="secondsPart">:--</span>
+                  <span class="digital__period" id="periodPart" hidden>PM</span>
+                </span>
+              </time>
+            </div>
+
+            <div class="date-line">
+              <p class="date-line__weekday" id="weekdayPart">—</p>
+              <span class="date-line__divider" aria-hidden="true"></span>
+              <p class="date-line__date" id="datePart">Carregando a data…</p>
+            </div>
+
+            <div class="hero-card__bottom">
+              <div class="day-progress">
+                <div class="day-progress__meta">
+                  <span>Dia concluído</span>
+                  <strong id="progressPercent">0%</strong>
+                </div>
+                <div class="progress-track" id="progressBar" role="progressbar" aria-label="Progresso do dia" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <span class="progress-track__fill" id="progressFill"></span>
+                </div>
+                <p class="day-progress__hint" id="remainingPart">Calculando o tempo restante…</p>
+              </div>
+
+              <div class="hero-card__actions">
+                <button class="btn btn--on-primary" id="copyButton" type="button">
+                  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-copy"/></svg>
+                  <span>Copiar horário</span>
+                </button>
+                <a class="icon-button icon-button--on-primary" href="#semana" aria-label="Ir para o calendário da semana">
+                  <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-arrow-down"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <aside class="clock-card" aria-label="Relógio analógico e fuso horário">
+          <div class="clock-card__head">
+            <div>
+              <p class="eyebrow">Em tempo real</p>
+              <h2>Relógio</h2>
+            </div>
+            <span class="chip chip--live"><span class="chip__dot"></span>Ao vivo</span>
+          </div>
+
+          <div class="clock-area">
+            <div class="analog" id="analogClock" role="img" aria-label="Relógio analógico">
+              <svg class="analog__ticks" viewBox="0 0 100 100" aria-hidden="true">
+                <g id="analogTicks"></g>
+              </svg>
+              <span class="analog__label analog__label--12">12</span>
+              <span class="analog__label analog__label--3">3</span>
+              <span class="analog__label analog__label--6">6</span>
+              <span class="analog__label analog__label--9">9</span>
+              <span class="hand hand--hour" id="hourHand"></span>
+              <span class="hand hand--minute" id="minuteHand"></span>
+              <span class="hand hand--second" id="secondHand"></span>
+              <span class="analog__pin"></span>
+            </div>
+          </div>
+
+          <div class="clock-card__meta">
+            <span class="meta-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><use href="#i-globe"/></svg>
+            </span>
+            <div class="meta-copy">
+              <span>Fuso horário</span>
+              <strong>São Paulo</strong>
+            </div>
+            <span class="chip" id="offsetChip">GMT−3</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="dashboard" id="semana" aria-label="Calendário da semana e preferências">
+        <article class="card calendar-card">
+          <header class="section-heading">
+            <div>
+              <p class="eyebrow">Calendário</p>
+              <h2 id="monthLabel">—</h2>
+            </div>
+            <span class="chip chip--lavender">
+              <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-calendar"/></svg>
+              Semana atual
+            </span>
+          </header>
+
+          <ol class="week-grid" id="weekGrid" aria-label="Dias da semana atual">
+            <li class="day-card"><span class="day-card__name">—</span><span class="day-card__number">—</span><span class="day-card__dot" aria-hidden="true"></span></li>
+          </ol>
+
+          <p class="calendar-note">
+            <span class="calendar-note__dot" aria-hidden="true"></span>
+            <span id="todayNote">Carregando a semana…</span>
+          </p>
+        </article>
+
+        <article class="card settings-card">
+          <header class="section-heading">
+            <div>
+              <p class="eyebrow">Preferências</p>
+              <h2>Seu relógio</h2>
+            </div>
+            <span class="section-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><use href="#i-tune"/></svg>
+            </span>
+          </header>
+
+          <div class="settings-list">
+            <label class="setting" for="formatToggle">
+              <span class="setting__copy">
+                <span class="setting__title">Formato 24 horas</span>
+                <span class="setting__description" id="formatHint">16:21</span>
+              </span>
+              <span class="switch">
+                <input type="checkbox" id="formatToggle" checked>
+                <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+              </span>
+            </label>
+
+            <label class="setting" for="secondsToggle">
+              <span class="setting__copy">
+                <span class="setting__title">Mostrar segundos</span>
+                <span class="setting__description">Inclui o ponteiro de segundos</span>
+              </span>
+              <span class="switch">
+                <input type="checkbox" id="secondsToggle" checked>
+                <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+              </span>
+            </label>
+          </div>
+
+          <div class="palette">
+            <span class="palette__label">Paleta base</span>
+            <span class="palette__dots" aria-label="Cores da paleta de referência">
+              <span class="palette__dot" style="--swatch:#4a2bc7" title="Roxo #4A2BC7"></span>
+              <span class="palette__dot" style="--swatch:#0097ff" title="Azul #0097FF"></span>
+              <span class="palette__dot" style="--swatch:#41d9b5" title="Verde-água #41D9B5"></span>
+              <span class="palette__dot" style="--swatch:#dccef4" title="Lilás #DCCEF4"></span>
+            </span>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p class="footer-status"><span class="footer-status__dot" aria-hidden="true"></span>Relógio ao vivo · Horário de São Paulo</p>
+      <p class="footer-meta">Material Design 3 <span class="footer-meta__sep" aria-hidden="true">/</span> atualização automática</p>
+    </footer>
+  </div>
+
+  <div class="snackbar" id="snackbar" role="status" aria-live="polite">
+    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check"/></svg>
+    <span id="snackbarText">Horário copiado</span>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
