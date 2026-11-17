@@ -26,7 +26,7 @@ Depois acesse `http://localhost:8080`.
 - Progresso do dia e tempo restante até a meia-noite.
 - Seletor com **419 fusos horários IANA**, busca por cidade, país ou identificador e filtros por região.
 - Ao escolher um fuso, hora, data, dia da semana, calendário, saudação e progresso do dia mudam juntos.
-- Alternância entre formato 24 h e 12 h.
+- Alternância entre formato 24 h e 12 h, com meia-noite como `00:00 AM` e meio-dia como `12:00 PM`.
 - Opção para ocultar os segundos no relógio digital e analógico.
 - Tema claro/escuro e fuso escolhido salvos no navegador.
 - Botão para copiar o horário, com snackbar de confirmação.

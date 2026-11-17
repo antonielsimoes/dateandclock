@@ -439,11 +439,19 @@
     return "Boa noite";
   }
 
-  function getDisplayHour(hour) {
+  function getDisplayHourValue(hour) {
     if (state.use24h) {
-      return pad(hour);
+      return hour;
     }
-    return pad(hour % 12 || 12);
+    // No formato de 12 h, a meia-noite permanece 00; o meio-dia continua 12.
+    if (hour === 0) {
+      return 0;
+    }
+    return hour % 12 || 12;
+  }
+
+  function getDisplayHour(hour) {
+    return pad(getDisplayHourValue(hour));
   }
 
   function getPeriod(hour) {
@@ -472,7 +480,7 @@
     nodes.periodPart.hidden = state.use24h;
     nodes.digitalSide.hidden = state.use24h && !state.showSeconds;
 
-    const spokenHour = state.use24h ? zoned.hour : (zoned.hour % 12 || 12);
+    const spokenHour = getDisplayHourValue(zoned.hour);
     let spoken = `${formatUnit(spokenHour, "hora", "horas")} e ${formatUnit(zoned.minute, "minuto", "minutos")}`;
 
     if (state.showSeconds) {
