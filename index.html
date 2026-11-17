@@ -64,6 +64,16 @@
       <symbol id="i-check" viewBox="0 0 24 24">
         <path d="m5 12.5 4.2 4L19 6.8"/>
       </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="10.8" cy="10.8" r="6.5"/>
+        <path d="m15.6 15.6 4.2 4.2"/>
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M18 6 6 18"/>
+      </symbol>
+      <symbol id="i-chevron-down" viewBox="0 0 24 24">
+        <path d="m6.5 9 5.5 5.5L17.5 9"/>
+      </symbol>
     </defs>
   </svg>
 
@@ -87,7 +97,7 @@
       <div class="topbar__actions">
         <span class="location-pill">
           <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-pin"/></svg>
-          <span class="location-pill__text">São Paulo, BR</span>
+          <span class="location-pill__text" id="locationText">São Paulo, BR</span>
         </span>
         <button class="icon-button theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false">
           <svg class="icon theme-toggle__moon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-moon"/></svg>
@@ -195,9 +205,13 @@
             </span>
             <div class="meta-copy">
               <span>Fuso horário</span>
-              <strong>São Paulo</strong>
+              <strong id="zoneCity">São Paulo</strong>
             </div>
-            <span class="chip" id="offsetChip">GMT−3</span>
+            <button class="zone-trigger" id="timezoneButton" type="button" aria-haspopup="dialog" aria-controls="timezoneDialog" aria-expanded="false" aria-label="Alterar fuso horário. Atual: São Paulo, GMT−3" title="Alterar fuso horário">
+              <span class="zone-trigger__hint">Alterar</span>
+              <span id="offsetChip">GMT−3</span>
+              <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chevron-down"/></svg>
+            </button>
           </div>
         </aside>
       </section>
@@ -274,16 +288,75 @@
     </main>
 
     <footer class="site-footer">
-      <p class="footer-status"><span class="footer-status__dot" aria-hidden="true"></span>Relógio ao vivo · Horário de São Paulo</p>
+      <p class="footer-status"><span class="footer-status__dot" aria-hidden="true"></span>Relógio ao vivo · <span id="footerZone">Horário de São Paulo</span></p>
       <p class="footer-meta">Material Design 3 <span class="footer-meta__sep" aria-hidden="true">/</span> atualização automática</p>
     </footer>
   </div>
+
+  <dialog class="zone-dialog" id="timezoneDialog" aria-labelledby="timezoneDialogTitle" aria-describedby="timezoneDialogDescription">
+    <div class="zone-dialog__top">
+      <header class="zone-dialog__header">
+        <span class="zone-dialog__icon" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-globe"/></svg>
+        </span>
+        <div class="zone-dialog__heading">
+          <p class="eyebrow">Fuso horário</p>
+          <h2 id="timezoneDialogTitle">Escolha uma cidade</h2>
+        </div>
+        <button class="icon-button zone-dialog__close" id="closeTimezoneButton" type="button" aria-label="Fechar lista de fusos horários">
+          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-close"/></svg>
+        </button>
+      </header>
+
+      <p class="zone-dialog__description" id="timezoneDialogDescription">A hora, a data e o dia da semana passam a seguir o fuso escolhido.</p>
+
+      <label class="search-field" for="timezoneSearch">
+        <svg class="icon search-field__icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-search"/></svg>
+        <input type="search" id="timezoneSearch" placeholder="Buscar cidade, país ou fuso horário" autocomplete="off" spellcheck="false" inputmode="search" aria-label="Buscar cidade, país ou fuso horário" aria-controls="zoneList">
+        <button class="search-field__clear" id="clearTimezoneSearch" type="button" aria-label="Limpar busca" hidden>
+          <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-close"/></svg>
+        </button>
+      </label>
+
+      <div class="zone-filters" id="zoneFilters" role="group" aria-label="Filtrar fusos horários por região">
+        <button class="filter-chip" type="button" data-region="all" aria-pressed="true">Todos</button>
+        <button class="filter-chip" type="button" data-region="America" aria-pressed="false">Américas</button>
+        <button class="filter-chip" type="button" data-region="Europe" aria-pressed="false">Europa</button>
+        <button class="filter-chip" type="button" data-region="Asia" aria-pressed="false">Ásia</button>
+        <button class="filter-chip" type="button" data-region="Africa" aria-pressed="false">África</button>
+        <button class="filter-chip" type="button" data-region="Oceania" aria-pressed="false">Oceania</button>
+        <button class="filter-chip" type="button" data-region="Other" aria-pressed="false">Outros</button>
+      </div>
+
+      <div class="zone-dialog__summary">
+        <span id="zoneCount">419 fusos horários</span>
+        <span class="zone-dialog__hint">Toque para aplicar</span>
+      </div>
+    </div>
+
+    <div class="zone-dialog__scroll" id="zoneListScroll">
+      <div class="zone-list" id="zoneList" aria-label="Lista de fusos horários"></div>
+      <div class="zone-empty" id="zoneEmpty" hidden>
+        <span class="zone-empty__icon" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24"><use href="#i-search"/></svg>
+        </span>
+        <strong>Nenhum fuso encontrado</strong>
+        <span>Tente buscar por outro país, cidade ou identificador.</span>
+      </div>
+    </div>
+
+    <footer class="zone-dialog__footer">
+      <span class="zone-dialog__source">Base IANA · horários atualizados automaticamente</span>
+      <span class="zone-dialog__keyboard"><kbd>Esc</kbd> para fechar</span>
+    </footer>
+  </dialog>
 
   <div class="snackbar" id="snackbar" role="status" aria-live="polite">
     <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check"/></svg>
     <span id="snackbarText">Horário copiado</span>
   </div>
 
+  <script src="timezone-data.js" defer></script>
   <script src="script.js" defer></script>
 </body>
 </html>
